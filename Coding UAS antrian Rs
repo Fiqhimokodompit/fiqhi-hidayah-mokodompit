@@ -1,0 +1,77 @@
+import time
+from collections import deque
+
+class Pasien:
+    def __init__(self, nama, jenis, status="Menunggu"):
+        self.nama = nama
+        self.jenis = jenis  # darurat atau umum
+        self.status = status
+        self.waktu_masuk = time.time()  # Waktu saat pasien ditambahkan ke antrian
+
+    def __str__(self):
+        return f"Nama: {self.nama}, Jenis: {self.jenis}, Status: {self.status}"
+
+class AntrianRumahSakit:
+    def __init__(self):
+        self.antrian = deque()  # Antrian pasien
+        self.dokter = {}  # Management dokter/poli
+
+    def tambah_pasien(self, nama, jenis):
+        pasien = Pasien(nama, jenis)
+        if jenis == 'darurat':
+            self.antrian.appendleft(pasien)  # Pasien darurat diprioritaskan
+        else:
+            self.antrian.append(pasien)  # Pasien umum ditambahkan ke belakang
+        print(f"Pasien {nama} telah ditambahkan ke antrian.")
+
+    def estimasi_waktu_tunggu(self):
+        # Menghitung estimasi waktu tunggu berdasarkan jumlah pasien
+        waktu_per_pasien = 10  # setiap pasien membutuhkan 10 menit
+        estimasi = len(self.antrian) * waktu_per_pasien
+        return estimasi
+
+    def kelola_dokter(self, nama_dokter, poli):
+        self.dokter[nama_dokter] = poli
+        print(f"Dokter {nama_dokter} telah ditambahkan ke poli {poli}.")
+
+    def rekam_status_pasien(self, nama, status):
+        for pasien in self.antrian:
+            if pasien.nama == nama:
+                pasien.status = status
+                print(f"Status pasien {nama} telah diperbarui menjadi '{status}'.")
+                return
+        print(f"Pasien {nama} tidak ditemukan dalam antrian.")
+
+    def tampilkan_antrian(self):
+        print("Antrian Pasien:")
+        for pasien in self.antrian:
+            print(pasien)
+
+# penggunaan sistem antrian rumah sakit
+if __name__ == "__main__":
+    sistem_antrian = AntrianRumahSakit()
+
+    # Menambahkan dokter
+    sistem_antrian.kelola_dokter("Dr. Agniya", "Umum")
+    sistem_antrian.kelola_dokter("Dr. Wine", "Spesialis")
+
+    # Menambahkan pasien
+    sistem_antrian.tambah_pasien("Daud", "biasa")
+    sistem_antrian.tambah_pasien("Fiqhi", "darurat")
+    sistem_antrian.tambah_pasien("Chell", "biasa")
+
+    # Menampilkan antrian
+    sistem_antrian.tampilkan_antrian()
+
+    # Estimasi waktu tunggu
+    estimasi = sistem_antrian.estimasi_waktu_tunggu()
+    print(f"Estimasi waktu tunggu: {estimasi} menit.")
+
+    # Memperbarui status pasien
+    sistem_antrian.rekam_status_pasien("Daud", "Sedang diperiksa")
+    sistem_antrian.rekam_status_pasien("Fiqhi", "Selesai diperiksa")
+
+    # Menampilkan antrian setelah pembaruan status
+    sistem_antrian.tampilkan_antrian()
+
+    # Sekian Dari Saya, Terima Kasih 
